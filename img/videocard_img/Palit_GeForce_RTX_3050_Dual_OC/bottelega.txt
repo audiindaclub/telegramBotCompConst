@@ -1,0 +1,202 @@
+# TOKEN 5265923075:AAEriIZresJtuYQ2LN0od4Uv9ZsVu94yECQ
+
+import telebot
+from telebot import types
+from telebot.types import ReplyKeyboardMarkup
+
+bot = telebot.TeleBot("5265923075:AAEriIZresJtuYQ2LN0od4Uv9ZsVu94yECQ")
+
+# Кнопки
+keyboarddetailsinfo = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True);
+keyboarddetailsinfo.row('Оптический привод', 'Термоинтерфейсы', 'Вентиляторы для корпуса')
+keyboarddetailsinfo.row('Сетевая карта', 'Кард-ридер', 'Салазки')
+keyboardback = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True);
+keyboardback.row('Назад')
+keyboardreset = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True);
+keyboardreset.row(' ')
+# Необходимые переменные
+# Общий бюджет
+money = 0
+# Переменные, отвечающие за раздел бюджета
+motherboard = 0
+CPU_value = 0
+corps = 0
+video_card = 0
+CPU_cooling = 0
+RAM_value = 0
+data_storage = 0
+power_unit = 0
+additional_details = 0
+
+
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
+    keyboard = types.InlineKeyboardMarkup()
+    key_go = types.InlineKeyboardButton(text='Перейти к сборке компьютера.', callback_data='go')
+    keyboard.add(key_go)
+    key_about = types.InlineKeyboardButton(text='Об авторах.', callback_data='about')
+    keyboard.add(key_about)
+    bot.reply_to(message,
+                 "Здравсвтуйте, я - бот-ассисент 'Computer_Constructor'\nСегодня я помогу вам собрать максимально подхоящий для вас компьютер! Давайте начнем.\nP.S. Для продожения нажмите одну из кнопок...",
+                 reply_markup=keyboard)
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def callback_worker(call):
+    if call.data == 'go':
+        bot.send_message(call.message.chat.id,
+                         "Шаг 1.\nВведите ваш бюджет! Именно от него будет зависеть предлагаемые детали...")
+
+        bot.register_next_step_handler(call.message, all_mn)
+        # bot.send_message(call.message.chat.id,
+        #                 text="Сборка компьютера:\nШаг 1. Введите команду /reg_budget")
+    if call.data == 'about':
+        keyboard = types.InlineKeyboardMarkup()
+        key_back = types.InlineKeyboardButton(text='Вернуться к начальному сообщению!', callback_data='back')
+        keyboard.add(key_back)
+        bot.send_message(call.message.chat.id,
+                         text="Добрый день/вечер!\nСоздатели данного бота: Марат Шахмоведев, Сергей Алимов\nПоддержать создателей:\nСбер: 4276 7001 3436 1660\nТинькофф: 5536 9141 1563 0000",
+                         reply_markup=keyboard)
+    if call.data == 'back':
+        keyboard = types.InlineKeyboardMarkup()
+        key_go = types.InlineKeyboardButton(text='Перейти к сборке компьютера.', callback_data='go')
+        keyboard.add(key_go)
+        key_about = types.InlineKeyboardButton(text='Об авторах.', callback_data='about')
+        keyboard.add(key_about)
+        bot.send_message(call.message.chat.id,
+                         "Здравсвтуйте, я - бот-ассисент 'Computer_Constructor'\nСегодня я помогу вам собрать максимально подхоящий для вас компьютер! Давайте начнем.\nP.S. Для продожения нажмите одну из кнопок...",
+                         reply_markup=keyboard)
+    if call.data == 'yes':
+        bot.send_message(call.message.chat.id,
+                         text="Супер! Переходим к шагу №2!", reply_markup=types.ReplyKeyboardRemove())
+        keyboard = types.InlineKeyboardMarkup()
+        key_withdopdetails = types.InlineKeyboardButton(text='Сборка с дополнительными деталями.',
+                                                        callback_data='withdopdetails')
+        keyboard.add(key_withdopdetails)
+        key_withoutdopdetails = types.InlineKeyboardButton(text='Сборка без дополнительных деталей.',
+                                                           callback_data='withoutdopdetails')
+        keyboard.add(key_withoutdopdetails)
+        key_dopdetailsinfo = types.InlineKeyboardButton(text='Дополнительные детали (info).',
+                                                        callback_data='dopdetailsinfo')
+        keyboard.add(key_dopdetailsinfo)
+        bot.send_message(call.message.chat.id,
+                         text="Шаг 2.\nВыберете ваш вариант сборки!", reply_markup=keyboard)
+    if call.data == 'no':
+        bot.send_message(call.message.chat.id,
+                         "Введите ваш бюджет заново!")
+        bot.register_next_step_handler(call.message, all_mn)
+    if call.data == 'dopdetailsinfo':
+        keyboard = types.InlineKeyboardMarkup()
+        key_back1 = types.InlineKeyboardButton(text='Вернуться к выбору сборки!', callback_data='yes')
+        keyboard.add(key_back1)
+        bot.send_message(call.message.chat.id, 'Выберете интересующую вас дополнительную деталь!',
+                         reply_markup=keyboarddetailsinfo)
+        bot.send_message(call.message.chat.id,
+                         '"Для возврата нажмите кнопку ниже"',
+                         reply_markup=keyboard)
+    if call.data == "withdopdetails":
+        motherboard = 0.1 * money
+        CPU_value = 0.3 * money
+        corps = 0.1 * money
+        video_card = 0.2 * money
+        CPU_cooling = 0.05 * money
+        RAM_value = 0.1 * money
+        data_storage = 0.05 * money
+        power_unit = 0.07 * money
+        additional_details = 0.03 * money
+        bot.send_message(call.message.chat.id,
+                         "motherboard = " + str(motherboard) + "\nCPU_value = " + str(CPU_value) + "\ncorps = " + str(
+                             corps) + "\nvideo_card = " + str(video_card) + "\nCPU_cooling = " + str(
+                             CPU_cooling) + "\nRAM_value = " + str(RAM_value) + "\ndata_storage = " + str(
+                             data_storage) + "\npower_unit = " + str(power_unit) + "\nadditional_details = " + str(
+                             additional_details))
+
+    if call.data == "withoutdopdetails":
+        motherboard = 0.1 * money
+        CPU_value = 0.3 * money
+        corps = 0.1 * money
+        video_card = 0.2 * money
+        CPU_cooling = 0.05 * money
+        RAM_value = 0.1 * money
+        data_storage = 0.05 * money
+        power_unit = 0.1 * money
+        bot.send_message(call.message.chat.id,
+                         "motherboard = " + str(motherboard) + "\nCPU_value = " + str(CPU_value) + "\ncorps = " + str(
+                             corps) + "\nvideo_card = " + str(video_card) + "\nCPU_cooling = " + str(
+                             CPU_cooling) + "\nRAM_value = " + str(RAM_value) + "\ndata_storage = " + str(
+                             data_storage) + "\npower_unit = " + str(power_unit))
+
+@bot.message_handler(func=lambda message: True)
+def echo_all(message):
+    # if message.text == '/reg_budget':
+    #    bot.send_message(message.from_user.id,
+    #                     "Введите ваш бюджет! Именно от него будет зависеть предлагаемые детали...")
+    #    bot.register_next_step_handler(message, all_mn)
+    if message.text == 'Оптический привод':
+        bot.send_message(message.from_user.id,
+                         "Оптический привод — устройство, имеющее механическую составляющую, управляемую электронной схемой и предназначенное для считывания и (в некоторых моделях) записи информации с оптических носителей информации в виде пластикового диска с отверстием в центре (компакт-диск, DVD и т. д.); процесс считывания/записи информации с диска осуществляется при помощи лазера.",
+                         reply_markup=keyboardback)
+        ph = open("img/opticpriv.png", 'rb')
+        bot.send_photo(message.from_user.id, ph)
+    elif message.text == 'Термоинтерфейсы':
+        bot.send_message(message.from_user.id,
+                         "Термоинтерфейс — слой теплопроводящего состава (обычно многокомпонентного) между охлаждаемой поверхностью и отводящим тепло устройством. Наиболее распространенным типом термоинтерфейса являются теплопроводящие пасты (термопасты) и компаунды.",
+                         reply_markup=keyboardback)
+        ph = open("img/termo.jpg", 'rb')
+        bot.send_photo(message.from_user.id, ph)
+    elif message.text == 'Вентиляторы для корпуса':
+        bot.send_message(message.from_user.id,
+                         "Основной поток воздуха внутри системного блока обеспечивает вентилятор блока питания.Он выдувает воздух наружу через щели в своей задней стенке. Одновременно через щели корпуса всасывается внешний (более холодный) воздух.\n\nТаким образом, вентилятор процессора отводит тепло внутрь системного блока, а вентилятор блока питания уносит его наружу.\n\nВнутри системного блока могут быть установлены дополнительные устройства — на видеокарту, винчестер; для вытяжки.",
+                         reply_markup=keyboardback)
+        ph = open("img/vent.jpg", 'rb')
+        bot.send_photo(message.from_user.id, ph)
+    elif message.text == 'Сетевая карта':
+        bot.send_message(message.from_user.id,
+                         "Сетевая карта (Ethernet-адаптер) – это специальное интерфейсное устройство, которое позволяет компьютеру (ноутбук) взаимодействовать с другими участниками локальной вычислительной сети. Сетевая карта, довольно часто интегрирована в материнскую плату ПК.",
+                         reply_markup=keyboardback)
+        ph = open("img/networkcard.jpg", 'rb')
+        bot.send_photo(message.from_user.id, ph)
+    elif message.text == 'Кард-ридер':
+        bot.send_message(message.from_user.id,
+                         "Кардридер — устройство для чтения карт памяти, а также иных электронных карт самого разного назначения. В частности, смарт-карт и флеш-карт.",
+                         reply_markup=keyboardback)
+        ph = open("img/cardread.jpg", 'rb')
+        bot.send_photo(message.from_user.id, ph)
+    elif message.text == 'Салазки':
+        bot.send_message(message.from_user.id,
+                         "Салазки предназначены для крепления в компьютерный корпус ( системного блока )",
+                         reply_markup=keyboardback)
+        ph = open("img/salazki.jpg", 'rb')
+        bot.send_photo(message.from_user.id, ph)
+    elif message.text == 'Назад':
+        keyboard = types.InlineKeyboardMarkup()
+        key_back1 = types.InlineKeyboardButton(text='Вернуться к выбору сборки!', callback_data='yes')
+        keyboard.add(key_back1)
+        bot.send_message(message.chat.id, 'Выберете интересующую вас дополнительную деталь!',
+                         reply_markup=keyboarddetailsinfo)
+        bot.send_message(message.chat.id,
+                         '"Для возврата нажмите кнопку ниже"',
+                         reply_markup=keyboard)
+    else:
+        bot.reply_to(message, 'Пожалуйста, введите команду /start и следуйте инструкциям!')
+
+
+def all_mn(message):
+    global money
+    if (message.text.isdigit()):
+        money = int(message.text)
+        keyboard = types.InlineKeyboardMarkup()
+        key_yes = types.InlineKeyboardButton(text='Да!', callback_data='yes')
+        keyboard.add(key_yes)
+        key_no = types.InlineKeyboardButton(text='Нет!', callback_data='no')
+        keyboard.add(key_no)
+        bot.send_message(message.from_user.id, "Ваш бюджет: " + str(money) + "₽  ?", reply_markup=keyboard)
+    else:
+        bot.send_message(message.from_user.id,
+                         "Введите бюджет корректно!\nБюджет должен быть введен цифрами и отличен от 0...")
+
+        bot.register_next_step_handler(message, all_mn)
+
+
+bot.infinity_polling()
+
